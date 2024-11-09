@@ -23,8 +23,13 @@ class NotificationWorker(context: Context, workerParams: WorkerParameters) : Wor
         val factEntry = dbHelper.getRandomEntry(currentDate, entryType)
 
         val factText = factEntry?.let {
+            val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+            val yearsAgoText = it.year.toIntOrNull()?.let { eventYear ->
+                val yearsAgo = currentYear - eventYear
+                "\n\n${yearsAgo} years ago"
+            } ?: "" // If year conversion fails, don't display "years ago" text
             val birthdayInfo: String = if (entryType == "Birthday") {"Birthday of "} else {""}
-            val result = "${it.date}, ${it.year} - $birthdayInfo${it.fact}"
+            val result = "${it.date}, ${it.year} - $birthdayInfo${it.fact}$yearsAgoText"
             Log.d("NotificationWorker", "Facts: $result")
             result
         }
