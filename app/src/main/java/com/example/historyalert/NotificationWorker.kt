@@ -29,10 +29,7 @@ class NotificationWorker(context: Context, workerParams: WorkerParameters) : Wor
             result
         }
         val linkText = factEntry?.let {
-            var result = ""
-            for (link in it.links) {
-                result = "$result$link\n\n"
-            }
+            val result = it.links.joinToString("\n\n")
             Log.d("NotificationWorker", "Links:\n$result")
             result
         }

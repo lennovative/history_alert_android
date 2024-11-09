@@ -138,15 +138,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getTextForEntry(fact: String?, links: String?): SpannableString {
-        // Just for debugging
-        //var i = 0
-        //var factTest = fact
-        //while (i < 7) {
-        //    factTest = "$factTest $fact"
-        //    i++
-        //}
         val spannableText = SpannableString("$fact\n\n$links")
-        links?.split("\n\n")?.forEach { link ->
+
+        // Split links by "\n\n" and filter out any empty strings
+        links?.split("\n\n")?.filter { it.isNotEmpty() }?.forEach { link ->
             val startIndex = spannableText.indexOf(link)
             if (startIndex != -1) {
                 spannableText.setSpan(object : ClickableSpan() {
@@ -157,6 +152,7 @@ class MainActivity : AppCompatActivity() {
                 }, startIndex, startIndex + link.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
         }
+
         return spannableText
     }
 
