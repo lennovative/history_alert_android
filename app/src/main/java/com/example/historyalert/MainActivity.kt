@@ -29,6 +29,7 @@ import android.widget.TextView
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.WorkInfo
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
     private lateinit var factTextView: TextView
@@ -48,6 +49,10 @@ class MainActivity : AppCompatActivity() {
         // Load database
         copyDatabaseFromAssets(this)
 
+        factTextView = findViewById(R.id.factTextView)
+        sharedPreferences = getSharedPreferences("HistoryFacts", Context.MODE_PRIVATE)
+        sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferencesListener)
+
         // Request permission if necessary
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
@@ -62,13 +67,8 @@ class MainActivity : AppCompatActivity() {
             checkAndScheduleNotificationWorker()
         }
 
-        factTextView = findViewById(R.id.factTextView)
-        sharedPreferences = getSharedPreferences("HistoryFacts", Context.MODE_PRIVATE)
-        sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferencesListener)
-        updateTextField()
-
         // Reference to the button
-        val notificationButton: Button = findViewById(R.id.btn_show_notification)
+        val notificationButton: FloatingActionButton = findViewById(R.id.btn_show_notification)
 
         // Set click listener to trigger an instant notification
         notificationButton.setOnClickListener {
@@ -120,6 +120,8 @@ class MainActivity : AppCompatActivity() {
                 // Start the worker only if it is not already running
                 if (!isRunning) {
                     scheduleNotificationWorker()
+                } else {
+                    updateTextField()
                 }
             }
     }
@@ -140,7 +142,7 @@ class MainActivity : AppCompatActivity() {
     private fun getTextForEntry(fact: String?, links: String?): SpannableString {
         var i = 0
         var factTest = fact
-        while (i < 4) {
+        while (i < 7) {
             factTest = "$factTest $fact"
             i++
         }
