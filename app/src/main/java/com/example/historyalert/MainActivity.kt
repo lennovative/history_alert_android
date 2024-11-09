@@ -17,7 +17,14 @@ import androidx.core.content.ContextCompat
 import java.io.FileOutputStream
 import java.io.IOException
 import android.Manifest
+import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.view.View
 import android.widget.TextView
 import androidx.work.Constraints
 import androidx.work.NetworkType
@@ -25,18 +32,14 @@ import androidx.work.WorkInfo
 
 class MainActivity : AppCompatActivity() {
     private lateinit var factTextView: TextView
-    private lateinit var linksTextView: TextView
     private lateinit var sharedPreferences: SharedPreferences
 
     // Define the listener to update TextViews when SharedPreferences change
     private val sharedPreferencesListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == "latestFact" || key == "latestLinks") {
-            // Update TextViews with the latest fact and links from SharedPreferences
-            factTextView.text = sharedPreferences.getString("latestFact", getString(R.string.no_data_error))
-            linksTextView.text = sharedPreferences.getString("latestLinks", "")
+            updateTextField()
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,16 +62,10 @@ class MainActivity : AppCompatActivity() {
             checkAndScheduleNotificationWorker()
         }
 
-        // Get SharedPreferences
-        val sharedPreferences = getSharedPreferences("HistoryFacts", Context.MODE_PRIVATE)
+        factTextView = findViewById(R.id.factTextView)
+        sharedPreferences = getSharedPreferences("HistoryFacts", Context.MODE_PRIVATE)
         sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferencesListener)
-
-        // Get UI access
-        val factTextView: TextView = findViewById(R.id.factTextView)
-        val linksTextView: TextView = findViewById(R.id.linksTextView)
-
-        factTextView.text = sharedPreferences.getString("latestFact", getString(R.string.no_data_error))
-        linksTextView.text = sharedPreferences.getString("latestLinks", "")
+        updateTextField()
 
         // Reference to the button
         val notificationButton: Button = findViewById(R.id.btn_show_notification)
@@ -76,11 +73,9 @@ class MainActivity : AppCompatActivity() {
         // Set click listener to trigger an instant notification
         notificationButton.setOnClickListener {
             scheduleNotificationWorker()
-            // Retrieve and display latest fact and links
-            factTextView.text = sharedPreferences.getString("latestFact", getString(R.string.no_data_error))
-            linksTextView.text = sharedPreferences.getString("latestLinks", "")
         }
     }
+
 
     // Handle permission result
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -130,9 +125,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Function to trigger an instant notification
-    private fun showNotificationNow() {
-        val oneTimeWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>().build()
-        WorkManager.getInstance(this).enqueue(oneTimeWorkRequest)
+    //private fun showNotificationNow() {
+    //    val oneTimeWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>().build()
+    //    WorkManager.getInstance(this).enqueue(oneTimeWorkRequest)
+    //}
+
+    private fun updateTextField() {
+        val fact = sharedPreferences.getString("latestFact", getString(R.string.no_data_error))
+        val links = sharedPreferences.getString("latestLinks", "")
+        factTextView.text = getTextForEntry(fact, links)
+        factTextView.movementMethod = LinkMovementMethod.getInstance()
+    }
+
+    private fun getTextForEntry(fact: String?, links: String?): SpannableString {
+        var i = 0
+        var factTest = fact
+        while (i < 4) {
+            factTest = "$factTest $fact"
+            i++
+        }
+        val spannableText = SpannableString("$factTest\n\n$links")
+        links?.split("\n")?.forEach { link ->
+            val startIndex = spannableText.indexOf(link)
+            if (startIndex != -1) {
+                spannableText.setSpan(object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                        startActivity(intent)
+                    }
+                }, startIndex, startIndex + link.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+        }
+        return spannableText
     }
 
 
@@ -154,6 +178,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             Log.d("Database", "Database already exists.")
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Unregister the listener to avoid memory leaks
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferencesListener)
     }
 
     companion object {

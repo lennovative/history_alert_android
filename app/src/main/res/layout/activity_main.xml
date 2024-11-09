@@ -6,18 +6,17 @@
 
     <TextView
         android:id="@+id/factTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Fact will appear here"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/linksTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Links will appear here"
-        android:paddingTop="8dp"
-        tools:ignore="HardcodedText" />
+        android:textSize="18sp"
+        android:padding="16dp"
+        android:textColor="@android:color/black"
+        android:lineSpacingExtra="4dp"
+        android:autoLink="web"
+        android:textColorLink="@android:color/holo_blue_dark"
+        android:scrollbars="vertical"
+        android:breakStrategy="high_quality"
+        />
 
     <Button
         android:id="@+id/btn_show_notification"
