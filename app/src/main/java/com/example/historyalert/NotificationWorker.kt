@@ -22,17 +22,20 @@ class NotificationWorker(context: Context, workerParams: WorkerParameters) : Wor
         val currentDate = SimpleDateFormat("MMMM dd", Locale.getDefault()).format(Date())
         val factEntry = dbHelper.getRandomEntry(currentDate, entryType)
 
-        val factText = factEntry?.let {
+        val yearsAgoText = factEntry?.let {
             val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-            val yearsAgoText = it.year.toIntOrNull()?.let { eventYear ->
+            it.year.toIntOrNull()?.let { eventYear ->
                 val yearsAgo = currentYear - eventYear
                 "\n\n${yearsAgo} years ago"
-            } ?: "" // If year conversion fails, don't display "years ago" text
+            } ?: ""
+        } ?: ""
+        val factText = factEntry?.let {
             val birthdayInfo: String = if (entryType == "Birthday") {"Birthday of "} else {""}
-            val result = "${it.date}, ${it.year} - $birthdayInfo${it.fact}$yearsAgoText"
-            Log.d("NotificationWorker", "Facts: $result")
+            val result = "${it.date}, ${it.year} - $birthdayInfo${it.fact}"
+            Log.d("NotificationWorker", "HistoryAlert:\n$result")
             result
         }
+        val factTextExtended = factText?.let { "$factText$yearsAgoText" }
         val linkText = factEntry?.let {
             val result = it.links.joinToString("\n\n")
             Log.d("NotificationWorker", "Links:\n$result")
@@ -42,7 +45,7 @@ class NotificationWorker(context: Context, workerParams: WorkerParameters) : Wor
         // Save the fact and links to SharedPreferences
         val sharedPreferences = applicationContext.getSharedPreferences("HistoryFacts", Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
-            putString("latestFact", factText)
+            putString("latestFact", factTextExtended)
             putString("latestLinks", linkText)
             apply()
         }
