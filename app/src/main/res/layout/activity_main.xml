@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/factTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fact will appear here"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/linksTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Links will appear here"
+        android:paddingTop="8dp"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/btn_show_notification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/refresh"
+        android:layout_centerInParent="true" />
+
+
+</RelativeLayout>
