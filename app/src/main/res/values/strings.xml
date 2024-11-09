@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">HistoryAlert</string>
+    <string name="refresh">Refresh</string>
+    <string name="no_data_error">No history available for today.</string>
+</resources>
