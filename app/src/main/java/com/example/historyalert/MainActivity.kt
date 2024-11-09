@@ -1,10 +1,8 @@
 package com.example.historyalert
 
 import android.os.Bundle
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
@@ -140,14 +138,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getTextForEntry(fact: String?, links: String?): SpannableString {
-        var i = 0
-        var factTest = fact
-        while (i < 7) {
-            factTest = "$factTest $fact"
-            i++
-        }
-        val spannableText = SpannableString("$factTest\n\n$links")
-        links?.split("\n")?.forEach { link ->
+        // Just for debugging
+        //var i = 0
+        //var factTest = fact
+        //while (i < 7) {
+        //    factTest = "$factTest $fact"
+        //    i++
+        //}
+        val spannableText = SpannableString("$fact\n\n$links")
+        links?.split("\n\n")?.forEach { link ->
             val startIndex = spannableText.indexOf(link)
             if (startIndex != -1) {
                 spannableText.setSpan(object : ClickableSpan() {
