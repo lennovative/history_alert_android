@@ -26,6 +26,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.work.Constraints
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -70,7 +71,8 @@ class MainActivity : AppCompatActivity() {
 
         // Set click listener to trigger an instant notification
         notificationButton.setOnClickListener {
-            scheduleNotificationWorker()
+            // scheduleNotificationWorker()
+            showNotificationNow()
         }
     }
 
@@ -95,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         // Create a periodic work request with a minimum of 15 minutes interval
-        val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(15, TimeUnit.MINUTES)
+        val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(30, TimeUnit.MINUTES)
             .setConstraints(constraints)  // Apply constraints if needed
             .build()
 
@@ -125,10 +127,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Function to trigger an instant notification
-    //private fun showNotificationNow() {
-    //    val oneTimeWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>().build()
-    //    WorkManager.getInstance(this).enqueue(oneTimeWorkRequest)
-    //}
+    private fun showNotificationNow() {
+        val oneTimeWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>().build()
+        WorkManager.getInstance(this).enqueue(oneTimeWorkRequest)
+    }
 
     private fun updateTextField() {
         val fact = sharedPreferences.getString("latestFact", getString(R.string.no_data_error))
