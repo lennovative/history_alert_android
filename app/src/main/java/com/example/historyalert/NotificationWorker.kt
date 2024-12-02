@@ -18,7 +18,7 @@ class NotificationWorker(context: Context, workerParams: WorkerParameters) : Wor
     override fun doWork(): Result {
         val entryType = if ((1..6).random() == 1) "Birthday" else "Event"
         val dbHelper = DatabaseHelper(applicationContext)
-        val currentDate = SimpleDateFormat("MMMM dd", Locale.getDefault()).format(Date())
+        val currentDate = SimpleDateFormat("MMMM dd", Locale.ENGLISH).format(Date())
         val factEntry = dbHelper.getRandomEntry(currentDate, entryType)
 
         val yearsAgoText = factEntry?.let {
