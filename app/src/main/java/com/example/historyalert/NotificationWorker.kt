@@ -16,7 +16,7 @@ import java.util.*
 class NotificationWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
 
     override fun doWork(): Result {
-        val entryType = if ((1..6).random() == 1) "Birthday" else "Event"
+        val entryType = if ((1..10).random() == 1) "Birthday" else "Event"
         val dbHelper = DatabaseHelper(applicationContext)
         val currentDate = SimpleDateFormat("MMMM dd", Locale.ENGLISH).format(Date())
         val factEntry = dbHelper.getRandomEntry(currentDate, entryType)
